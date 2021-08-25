@@ -8,6 +8,7 @@ __pycache__/
 
 /*.yaml
 /configs/*
+/datasets/*
 /tmp/*
 *.data*
 *.index
