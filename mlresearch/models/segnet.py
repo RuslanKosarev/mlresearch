@@ -50,16 +50,16 @@ class SegNet(nn.Module):
         x1p, id1 = functional.max_pool2d(x1, kernel_size=2, stride=2, return_indices=True)
 
         x2 = self.enc_conv1(x1p)
-        x2p, id2 = functional.max_pool2d(x2, kernel_size=2, stride=2, return_indices=True)
+        x2p, id2 = functional.max_pool2d(x2, kernel_size=(2, 2), stride=(2, 2), return_indices=True)
 
         x3 = self.enc_conv2(x2p)
-        x3p, id3 = functional.max_pool2d(x3, kernel_size=2, stride=2, return_indices=True)
+        x3p, id3 = functional.max_pool2d(x3, kernel_size=(2, 2), stride=(2, 2), return_indices=True)
 
         x4 = self.enc_conv3(x3p)
-        x4p, id4 = functional.max_pool2d(x4, kernel_size=2, stride=2, return_indices=True)
+        x4p, id4 = functional.max_pool2d(x4, kernel_size=(2, 2), stride=(2, 2), return_indices=True)
 
         x5 = self.enc_conv4(x4p)
-        x5p, id5 = functional.max_pool2d(x5, kernel_size=2, stride=2, return_indices=True)
+        x5p, id5 = functional.max_pool2d(x5, kernel_size=(2, 2), stride=(2, 2), return_indices=True)
 
         # decoder (up sampling)
         x5d = functional.max_unpool2d(x5p, id5, kernel_size=(2, 2), stride=(2, 2))
