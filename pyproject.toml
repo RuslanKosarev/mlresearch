@@ -6,6 +6,8 @@ authors = ["korus <ruslan.kosarev@smedx.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+torch = "^1.9.0"
+scikit-image = "^0.18.3"
 
 [tool.poetry.dev-dependencies]
 
