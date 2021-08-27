@@ -1,0 +1,12 @@
+# coding:utf-8
+
+# Directory for datasets
+root:
+
+# Random seed
+seed: 0
+
+# batch size
+batch_size: 25
+
+

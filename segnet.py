@@ -7,26 +7,28 @@ from torch.utils.data import DataLoader
 from skimage.io import imread
 from skimage.transform import resize
 
+from mlresearch.config import load_config
 from mlresearch.models.segnet import SegNet
 from mlresearch.loss import bce_loss
 
-torch.manual_seed(0)
-np.random.seed(0)
 
-size = (256, 256)
-batch_size = 25
+config = load_config({
+    'dataset': 'PH2Dataset/PH2 Dataset images',
+    'batch_size': 25,
+    'size': (256, 256),
+})
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 
-root = 'datasets/PH2Dataset/PH2 Dataset images'
-images = [imread(path) for path in Path(root).glob('**/*Dermoscopic_Image/*.bmp')] # noqa
-lesions = [imread(path) for path in Path(root).glob('**/*lesion.bmp')]  # noqa
+dataset = Path(config.root).expanduser() / config.dataset
+images = [imread(file) for file in dataset.glob('**/*Dermoscopic_Image/*.bmp')]
+lesions = [imread(file) for file in dataset.glob('**/*lesion.bmp')]
 print('images ', len(images))
 print('lessons', len(lesions))
 
-X = [resize(x, size, mode='constant', anti_aliasing=True) for x in images]
-Y = [resize(y, size, mode='constant', anti_aliasing=False) > 0.5 for y in lesions]
+X = [resize(x, config.size, mode='constant', anti_aliasing=True) for x in images]
+Y = [resize(y, config.size, mode='constant', anti_aliasing=False) > 0.5 for y in lesions]
 
 X = np.array(X, np.float32)
 Y = np.array(Y, np.float32)
@@ -36,9 +38,9 @@ print(f'Loaded {len(X)} images')
 ix = np.random.choice(len(X), len(X), False)
 tr, val, ts = np.split(ix, [100, 150])
 
-data_tr = DataLoader(list(zip(np.rollaxis(X[tr], 3, 1), Y[tr, np.newaxis])), batch_size=batch_size, shuffle=True)
-data_val = DataLoader(list(zip(np.rollaxis(X[val], 3, 1), Y[val, np.newaxis])), batch_size=batch_size, shuffle=True)
-data_ts = DataLoader(list(zip(np.rollaxis(X[ts], 3, 1), Y[ts, np.newaxis])), batch_size=batch_size, shuffle=True)
+data_tr = DataLoader(list(zip(np.rollaxis(X[tr], 3, 1), Y[tr, np.newaxis])), batch_size=config.batch_size, shuffle=True)
+data_val = DataLoader(list(zip(np.rollaxis(X[val], 3, 1), Y[val, np.newaxis])), batch_size=config.batch_size, shuffle=True)
+data_ts = DataLoader(list(zip(np.rollaxis(X[ts], 3, 1), Y[ts, np.newaxis])), batch_size=config.batch_size, shuffle=True)
 
 
 def train(model, opt, loss_fn, epochs, data_tr, data_val):
