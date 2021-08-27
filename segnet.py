@@ -51,7 +51,8 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
         avg_loss = 0
         model.train()  # train mode
 
-        for X_batch, Y_batch in data_tr:
+        for idx, (X_batch, Y_batch) in enumerate(data_tr):
+            print(idx)
 
             # data to device
             X_batch = X_batch.to(device)
