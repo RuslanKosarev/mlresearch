@@ -74,7 +74,7 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
 model = SegNet().to(device)
 print(model)
 
-max_epochs = 100
+max_epochs = 50
 optimizer = torch.optim.Adam(model.parameters())
 train(model, optimizer, bce_loss, max_epochs, data_tr, data_val)
 
