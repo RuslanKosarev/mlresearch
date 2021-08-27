@@ -43,7 +43,7 @@ data_val = DataLoader(list(zip(np.rollaxis(X[val], 3, 1), Y[val, np.newaxis])), 
 data_ts = DataLoader(list(zip(np.rollaxis(X[ts], 3, 1), Y[ts, np.newaxis])), batch_size=config.batch_size, shuffle=True)
 
 
-def train(model, opt, loss_fn, epochs, data_tr, data_val):
+def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
     X_val, Y_val = next(iter(data_val))
 
     for epoch in range(epochs):
@@ -58,13 +58,13 @@ def train(model, opt, loss_fn, epochs, data_tr, data_val):
             Y_batch = Y_batch.to(device)
 
             # set parameter gradients to zero
-            opt.zero_grad()
+            optimizer.zero_grad()
 
             # forward
             Y_pred = model(X_batch)
             loss = loss_fn(Y_pred, Y_batch)  # forward-pass
             loss.backward()  # backward-pass
-            opt.step()  # update weights
+            optimizer.step()  # update weights
 
             avg_loss += loss / len(data_tr)
 
