@@ -61,7 +61,7 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
             optimizer.zero_grad()
 
             # forward
-            Y_pred = model.forward(X_batch)
+            Y_pred = model(X_batch)
             loss = loss_fn(Y_pred, Y_batch)  # forward-pass
             loss.backward()  # backward-pass
             optimizer.step()  # update weights
