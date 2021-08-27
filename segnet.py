@@ -66,7 +66,7 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
             loss.backward()  # backward-pass
             optimizer.step()  # update weights
 
-            avg_loss += loss / len(data_tr)
+            avg_loss += loss.item() / len(data_tr)
 
         print(f'Epoch {epoch+1}/{epochs}, loss: {avg_loss}')
 
