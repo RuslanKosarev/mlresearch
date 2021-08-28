@@ -88,17 +88,16 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
         avg_loss = 0
         model.train()  # train mode
 
-        for idx, (X_batch, Y_batch) in enumerate(data_tr):
+        for idx, (x_batch, y_batch) in enumerate(data_tr):
             # data to device
-            X_batch = X_batch.to(device)
-            Y_batch = Y_batch.to(device)
+            x_batch = x_batch.to(device)
+            y_batch = y_batch.to(device)
 
             # set parameter gradients to zero
             optimizer.zero_grad()
 
             # forward
-            Y_pred = model(X_batch)
-            loss = loss_fn(Y_pred, Y_batch)  # forward-pass
+            loss = loss_fn(model(x_batch), y_batch)  # forward-pass
             loss.backward()  # backward-pass
             optimizer.step()  # update weights
 
