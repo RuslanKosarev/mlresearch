@@ -67,19 +67,22 @@ def iou_pytorch(outputs: torch.Tensor, labels: torch.Tensor):
 #     return np.array(Y_pred)
 
 
-def score_model(model, metric, data):
+def score_model(model, loss_fn, metric, data):
     model.eval()
-    scores = 0
+    loss = 0
+    score = 0
 
-    for x_batch, y_label in data:
-        x_batch = x_batch.to(device)
-        y_label = y_label.to(device)
+    for x_batch, y_batch in data:
+        x_batch = model(x_batch.to(device))
+        y_batch = y_batch.to(device)
 
-        y_pred = torch.round(torch.sigmoid(model(x_batch))).detach()
+        loss += loss_fn(x_batch, y_batch)
+        score += metric(torch.round(torch.sigmoid(x_batch)).detach(), y_batch).mean()
 
-        scores += metric(y_pred, y_label).mean()
+    loss /= len(data)
+    score /= len(data)
 
-    return scores/len(data)
+    return loss, score
 
 
 def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
@@ -101,10 +104,10 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
             loss.backward()  # backward-pass
             optimizer.step()  # update weights
 
-            avg_loss += loss.item() / len(data_tr)
+            avg_loss += loss / len(data_tr)
 
-        score = score_model(model, iou_pytorch, data_val)
-        print(f'epoch {epoch+1}/{epochs}, loss: {avg_loss}: score {score}')
+        val_loss, val_score = score_model(model, loss_fn, iou_pytorch, data_val)
+        print(f'epoch {epoch+1}/{epochs}, loss: {avg_loss}: val_loss {val_loss}, val_score {val_score}')
 
 
 optimizer = torch.optim.Adam(model.parameters())
