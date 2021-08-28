@@ -104,7 +104,7 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
             loss.backward()  # backward-pass
             optimizer.step()  # update weights
 
-            avg_loss += loss / len(data_tr)
+            avg_loss += loss.item() / len(data_tr)
 
         val_loss, val_score = score_model(model, loss_fn, iou_pytorch, data_val)
         print(f'epoch {epoch+1}/{epochs}, loss: {avg_loss}: val_loss {val_loss}, val_score {val_score}')
