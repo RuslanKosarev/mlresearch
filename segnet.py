@@ -91,23 +91,23 @@ def iou_pytorch(outputs: torch.Tensor, labels: torch.Tensor):
     return thresholded
 
 
-def predict(model, data):
-    model.eval()  # testing mode
-    Y_pred = [model(X_batch) for X_batch, _ in data]
-    return np.array(Y_pred)
+# def predict(model, data):
+#     model.eval()  # testing mode
+#     Y_pred = [model(X_batch) for X_batch, _ in data]
+#     return np.array(Y_pred)
 
 
 def score_model(model, metric, data):
     model.eval()
     scores = 0
 
-    for X_batch, Y_label in data:
-        X_batch = X_batch.to(device)
-        Y_label = Y_label.to(device)
+    for x_batch, y_label in data:
+        x_batch = x_batch.to(device)
+        y_label = y_label.to(device)
 
-        Y_pred = torch.round(torch.sigmoid(model(X_batch))).detach()
+        y_pred = torch.round(torch.sigmoid(model(x_batch))).detach()
 
-        scores += metric(Y_pred, Y_label).mean()
+        scores += metric(y_pred, y_label).mean()
 
     return scores/len(data)
 
