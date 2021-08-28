@@ -40,38 +40,8 @@ data_val = DataLoader(list(zip(np.rollaxis(X[val], 3, 1), Y[val, np.newaxis])), 
 data_ts = DataLoader(list(zip(np.rollaxis(X[ts], 3, 1), Y[ts, np.newaxis])), batch_size=config.batch_size, shuffle=True)
 
 
-def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
-    X_val, Y_val = next(iter(data_val))
-
-    for epoch in range(epochs):
-        # tic = time()
-        avg_loss = 0
-        model.train()  # train mode
-
-        for idx, (X_batch, Y_batch) in enumerate(data_tr):
-            # data to device
-            X_batch = X_batch.to(device)
-            Y_batch = Y_batch.to(device)
-
-            # set parameter gradients to zero
-            optimizer.zero_grad()
-
-            # forward
-            Y_pred = model(X_batch)
-            loss = loss_fn(Y_pred, Y_batch)  # forward-pass
-            loss.backward()  # backward-pass
-            optimizer.step()  # update weights
-
-            avg_loss += loss.item() / len(data_tr)
-
-        print(f'epoch {epoch+1}/{epochs}, loss: {avg_loss}')
-
-
 model = SegNet().to(device)
 print(model)
-
-optimizer = torch.optim.Adam(model.parameters())
-train(model, optimizer, bce_loss, config.train.max_epochs, data_tr, data_val)
 
 
 def iou_pytorch(outputs: torch.Tensor, labels: torch.Tensor):
@@ -112,5 +82,33 @@ def score_model(model, metric, data):
     return scores/len(data)
 
 
-out = score_model(model, iou_pytorch, data_val)
-print(out)
+def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
+    X_val, Y_val = next(iter(data_val))
+
+    for epoch in range(epochs):
+        # tic = time()
+        avg_loss = 0
+        model.train()  # train mode
+
+        for idx, (X_batch, Y_batch) in enumerate(data_tr):
+            # data to device
+            X_batch = X_batch.to(device)
+            Y_batch = Y_batch.to(device)
+
+            # set parameter gradients to zero
+            optimizer.zero_grad()
+
+            # forward
+            Y_pred = model(X_batch)
+            loss = loss_fn(Y_pred, Y_batch)  # forward-pass
+            loss.backward()  # backward-pass
+            optimizer.step()  # update weights
+
+            avg_loss += loss.item() / len(data_tr)
+
+        score = score_model(model, iou_pytorch, data_val)
+        print(f'epoch {epoch+1}/{epochs}, loss: {avg_loss}: score {score}')
+
+
+optimizer = torch.optim.Adam(model.parameters())
+train(model, optimizer, bce_loss, config.train.max_epochs, data_tr, data_val)
