@@ -1,8 +1,5 @@
 # coding:utf-8
 
-# directory for datasets
-root: ~/datasets
-
 # batch size
 batch_size: 20
 
