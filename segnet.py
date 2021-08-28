@@ -13,6 +13,7 @@ from mlresearch.loss import bce_loss
 
 
 config = load_config()
+print(config)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
