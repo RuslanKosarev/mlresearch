@@ -12,23 +12,19 @@ from mlresearch.models.segnet import SegNet
 from mlresearch.loss import bce_loss
 
 
-config = load_config({
-    'dataset': 'PH2Dataset/PH2 Dataset images',
-    'batch_size': 25,
-    'size': (256, 256),
-})
+config = load_config()
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 
-dataset = Path(config.root).expanduser() / config.dataset
-images = [imread(file) for file in dataset.glob('**/*Dermoscopic_Image/*.bmp')]
-lesions = [imread(file) for file in dataset.glob('**/*lesion.bmp')]
+path = Path(config.root).expanduser() / config.dataset.path
+images = [imread(file) for file in path.glob('**/*Dermoscopic_Image/*.bmp')]
+lesions = [imread(file) for file in path.glob('**/*lesion.bmp')]
 print('images ', len(images))
 print('lessons', len(lesions))
 
-X = [resize(x, config.size, mode='constant', anti_aliasing=True) for x in images]
-Y = [resize(y, config.size, mode='constant', anti_aliasing=False) > 0.5 for y in lesions]
+X = [resize(x, config.image.size, mode='constant', anti_aliasing=True) for x in images]
+Y = [resize(y, config.image.size, mode='constant', anti_aliasing=False) > 0.5 for y in lesions]
 
 X = np.array(X, np.float32)
 Y = np.array(Y, np.float32)
@@ -52,8 +48,6 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
         model.train()  # train mode
 
         for idx, (X_batch, Y_batch) in enumerate(data_tr):
-            print(idx)
-
             # data to device
             X_batch = X_batch.to(device)
             Y_batch = Y_batch.to(device)
@@ -75,9 +69,8 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
 model = SegNet().to(device)
 print(model)
 
-max_epochs = 50
 optimizer = torch.optim.Adam(model.parameters())
-train(model, optimizer, bce_loss, max_epochs, data_tr, data_val)
+train(model, optimizer, bce_loss, config.train.max_epochs, data_tr, data_val)
 
 
 def iou_pytorch(outputs: torch.Tensor, labels: torch.Tensor):

@@ -138,7 +138,8 @@ def load_config(dct: dict = None, file: PathType = None):
         except Exception as err:
             raise LoadConfigError(f"Cannot load configuration from '{config_path}'\n{err}")
 
-    cfg = OmegaConf.merge(cfg, dct)
+    if dct is not None:
+        cfg = OmegaConf.merge(cfg, dct)
 
     if len(cfg.keys()) == 0:
         raise LoadConfigError("The configuration has not been loaded.")
