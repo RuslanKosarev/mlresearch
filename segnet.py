@@ -102,8 +102,10 @@ def score_model(model, metric, data):
     scores = 0
 
     for X_batch, Y_label in data:
-        # Y_pred = torch.round(torch.sigmoid(model(X_batch))).detach()
-        Y_pred = torch.round(torch.nn.Sigmoid()(model(X_batch))).detach()
+        X_batch = X_batch.to(device)
+        Y_label = Y_label.to(device)
+
+        Y_pred = torch.round(torch.sigmoid(model(X_batch))).detach()
 
         scores += metric(Y_pred, Y_label).mean().item()
 
