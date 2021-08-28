@@ -76,7 +76,7 @@ def score_model(model, loss_fn, metric, data):
         x_batch = model(x_batch.to(device))
         y_batch = y_batch.to(device)
 
-        loss += loss_fn(x_batch, y_batch)
+        loss += loss_fn(x_batch, y_batch).item()
         score += metric(torch.round(torch.sigmoid(x_batch)).detach(), y_batch).mean()
 
     loss /= len(data)
