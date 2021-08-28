@@ -83,10 +83,8 @@ def score_model(model, metric, data):
 
 
 def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
-    X_val, Y_val = next(iter(data_val))
 
     for epoch in range(epochs):
-        # tic = time()
         avg_loss = 0
         model.train()  # train mode
 
