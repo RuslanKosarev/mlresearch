@@ -107,7 +107,7 @@ def score_model(model, metric, data):
 
         Y_pred = torch.round(torch.sigmoid(model(X_batch))).detach()
 
-        scores += metric(Y_pred, Y_label).mean().item()
+        scores += metric(Y_pred, Y_label).mean()
 
     return scores/len(data)
 
