@@ -64,7 +64,7 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
 
             avg_loss += loss.item() / len(data_tr)
 
-        print(f'Epoch {epoch+1}/{epochs}, loss: {avg_loss}')
+        print(f'epoch {epoch+1}/{epochs}, loss: {avg_loss}')
 
 
 model = SegNet().to(device)
