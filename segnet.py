@@ -9,7 +9,7 @@ from skimage.transform import resize
 
 from mlresearch.config import load_config
 from mlresearch.models.segnet import SegNet
-from mlresearch.loss import bce_loss
+from mlresearch import loss
 
 
 config = load_config()
@@ -110,5 +110,6 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
         print(f'epoch {epoch+1}/{epochs}, loss: {avg_loss}: val_loss {val_loss}, val_score {val_score}')
 
 
+loss = loss.FocalLoss()
 optimizer = torch.optim.Adam(model.parameters())
-train(model, optimizer, bce_loss, config.train.max_epochs, data_tr, data_val)
+train(model, optimizer, loss, config.train.max_epochs, data_tr, data_val)
