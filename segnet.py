@@ -110,7 +110,7 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
         print(f'epoch {epoch+1}/{epochs}, loss: {avg_loss}: val_loss {val_loss}, val_score {val_score}')
 
 
-loss = losses.FocalLoss()
+loss = losses.binary_cross_entropy_with_logits
 optimizer = torch.optim.Adam(model.parameters())
 print('loss', loss)
 print('optimizer', optimizer)

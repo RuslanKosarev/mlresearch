@@ -3,7 +3,7 @@ import torch
 from torch.nn import functional as F
 
 
-def bce_loss(y_real, y_pred):
+def binary_cross_entropy_with_logits(y_real, y_pred):
     """
     loss = torch.nn.BCEWithLogitsLoss()
     loss(y_real, y_pred)
@@ -12,31 +12,54 @@ def bce_loss(y_real, y_pred):
     :param y_pred:
     :return:
     """
-    loss = torch.maximum(y_real, torch.tensor(0)) - y_real * y_pred + torch.log(torch.tensor(1) + torch.exp(-torch.abs(y_real)))
+    loss = torch.clamp(y_real, 0) - y_real * y_pred + torch.log(1 + torch.exp(-torch.abs(y_real)))
 
     return loss.mean()
 
 
-class FocalLoss(torch.nn.Module):
-    def __init__(self, alpha=1, gamma=2, reduction: str = 'mean'):
-        super().__init__()
+def focal_loss(y_real, y_pred, eps=1e-8, gamma=2):
+    # loss = torch.maximum(y_real, torch.tensor(0)) - y_real * y_pred + torch.log(torch.tensor(1) + torch.exp(-torch.abs(y_real)))
 
-        if reduction not in ['mean', 'sum', 'none']:
-            raise NotImplementedError(f'Reduction {reduction} not implemented.')
+    return loss.mean()
 
-        self.reduction = reduction
-        self.alpha = alpha
-        self.gamma = gamma
 
-    def forward(self, x, target):
-        p_t = torch.where(target == 1, x, 1-x)
-        loss = - 1 * (1 - p_t) ** self.gamma * torch.log(p_t)
-        loss = torch.where(target == 1, loss * self.alpha, loss)
-
-        if self.reduction == 'mean':
-            return loss.mean()
-        elif self.reduction == 'sum':
-            return loss.sum()
-        else:
-            return loss
-
+# from torch.autograd import Variable
+# class FocalLoss(torch.nn.Module):
+#     def __init__(self, gamma=0, alpha=None, size_average=True):
+#         super(FocalLoss, self).__init__()
+#         self.gamma = gamma
+#         self.alpha = alpha
+#
+#         if isinstance(alpha, list):
+#             self.alpha = torch.Tensor(alpha)
+#         else:
+#             self.alpha = torch.Tensor([alpha, 1-alpha])
+#
+#         self.size_average = size_average
+#
+#     def forward(self, input, target):
+#         if input.dim() > 2:
+#             input = input.view(input.size(0), input.size(1), -1)  # N,C,H,W => N,C,H*W
+#             input = input.transpose(1, 2)    # N,C,H*W => N,H*W,C
+#             input = input.contiguous().view(-1, input.size(2))   # N,H*W,C => N*H*W,C
+#
+#         target = target.view(-1, 1)
+#
+#         logpt = F.log_softmax(input)
+#         logpt = logpt.gather(1, target)
+#         logpt = logpt.view(-1)
+#         pt = Variable(logpt.data.exp())
+#
+#         if self.alpha is not None:
+#             if self.alpha.type() != input.data.type():
+#                 self.alpha = self.alpha.type_as(input.data)
+#
+#             at = self.alpha.gather(0, target.data.view(-1))
+#             logpt = logpt * Variable(at)
+#
+#         loss = -1 * (1-pt)**self.gamma * logpt
+#
+#         if self.size_average:
+#             return loss.mean()
+#         else:
+#             return loss.sum()
