@@ -112,4 +112,7 @@ def train(model, optimizer, loss_fn, epochs, data_tr, data_val):
 
 loss = loss.FocalLoss()
 optimizer = torch.optim.Adam(model.parameters())
+print('loss', loss)
+print('optimizer', optimizer)
+
 train(model, optimizer, loss, config.train.max_epochs, data_tr, data_val)
