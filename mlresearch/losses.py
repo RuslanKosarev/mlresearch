@@ -1,18 +1,19 @@
 
 import torch
-from torch.nn import functional as F
 
 
-def binary_cross_entropy_with_logits(y_real, y_pred):
+def binary_cross_entropy_with_logits(input, target): # noqa
     """
     loss = torch.nn.BCEWithLogitsLoss()
-    loss(y_real, y_pred)
+    loss(y_real, target)
 
-    :param y_real:
-    :param y_pred:
+    loss = -target*torch.log(torch.sigmoid(input)) - (1 - target)*torch.log(1 - torch.sigmoid(input))
+
+    :param input:
+    :param target:
     :return:
     """
-    loss = torch.clamp(y_real, 0) - y_real * y_pred + torch.log(1 + torch.exp(-torch.abs(y_real)))
+    loss = torch.clamp(input, 0) - input * target + torch.log(1 + torch.exp(-torch.abs(input)))
 
     return loss.mean()
 
